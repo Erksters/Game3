@@ -9,7 +9,7 @@ namespace Game3
     public class Game3 : Game
     {
         private GraphicsDeviceManager _graphics;
-        private readonly ScreenManager _screenManager;
+        private readonly ScreenManager _screenManager;               
 
         public Game3()
         {
@@ -31,7 +31,10 @@ namespace Game3
             //I want to see the Splash screen first, therfore, it is last added to the stack
             _screenManager.AddScreen(new BackgroundScreen(), null);
             _screenManager.AddScreen(new MainMenuScreen(), null);
-            _screenManager.AddScreen(new SplashScreen(), null);
+            if (!Constants.inDevelopment)
+            {
+                _screenManager.AddScreen(new SplashScreen(), null);
+            }            
         }
 
 
