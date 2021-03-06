@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace GameArchitectureExample.Screens
 {
-    public class CutSceneScreen : GameScreen
+    public class CutSceneScreen1 : GameScreen
     {
         ContentManager content;
         Video video;
@@ -17,7 +17,7 @@ namespace GameArchitectureExample.Screens
         bool isPlaying;
         InputAction skip;
 
-        public CutSceneScreen()
+        public CutSceneScreen1()
         {
             videoPlayer = new VideoPlayer();
             skip = new InputAction(new Buttons[] { Buttons.A }, new Keys[] { Keys.Space, Keys.Enter }, true);

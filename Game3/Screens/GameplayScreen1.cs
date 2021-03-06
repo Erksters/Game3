@@ -6,28 +6,48 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using GameArchitectureExample.StateManagement;
 using Game3;
+using tainicom.Aether.Physics2D.Collision.Shapes;
+using tainicom.Aether.Physics2D.Common;
+using tainicom.Aether.Physics2D.Dynamics;
+using tainicom.Aether.Physics2D.Dynamics.Joints;
+//using tainicom.Aether.Physics2D.Samples.ScreenSystem;
 
 namespace GameArchitectureExample.Screens
 {
     // This screen implements the actual game logic. It is just a
     // placeholder to get the idea across: you'll probably want to
     // put some more interesting gameplay in here!
-    public class GameplayScreen : GameScreen
+    public class GameplayScreen1 : GameScreen 
     {
         private ContentManager _content;
         private SpriteFont _gameFont;
 
+        #region Transition animations
+        private float _pauseAlpha;
+        private readonly InputAction _pauseAction;
+        #endregion
+
+        #region Game Contents
+        //private Protagonist protagonist;
+        private Body _ground;
+        private Sprite protagonist;
         private Vector2 _playerPosition = new Vector2(100, 100);
+        #endregion
 
         private readonly Random _random = new Random();
 
-        private float _pauseAlpha;
-        private readonly InputAction _pauseAction;
-
-        public GameplayScreen()
+        public GameplayScreen1()
         {
-            TransitionOnTime = TimeSpan.FromSeconds(1.5);
-            TransitionOffTime = TimeSpan.FromSeconds(0.5);
+            if (!Constants.inDevelopment)
+            {
+                TransitionOnTime = TimeSpan.FromSeconds(1.5);
+                TransitionOffTime = TimeSpan.FromSeconds(0.5);
+            }
+            else
+            {
+                TransitionOnTime = TimeSpan.FromSeconds(0);
+                TransitionOffTime = TimeSpan.FromSeconds(0);
+            }
 
             _pauseAction = new InputAction(
                 new[] { Buttons.Start, Buttons.Back },
@@ -175,6 +195,7 @@ namespace GameArchitectureExample.Screens
             else
                 _pauseAlpha = Math.Max(_pauseAlpha - 1f / 32, 0);
         }
+
 
         /// <summary>
         /// Windows phone requirement
