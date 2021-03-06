@@ -23,7 +23,7 @@ namespace GameArchitectureExample.Screens
 
         private void PlayGameMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
-            LoadingScreen.Load(ScreenManager, true, e.PlayerIndex, new GameplayScreen(), new CutSceneScreen());
+            LoadingScreen.Load(ScreenManager, true, e.PlayerIndex, new GameplayScreen1(), new CutSceneScreen1());
         }
 
         private void OptionsMenuEntrySelected(object sender, PlayerIndexEventArgs e)
