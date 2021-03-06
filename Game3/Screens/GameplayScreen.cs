@@ -37,8 +37,7 @@ namespace GameArchitectureExample.Screens
         // Load graphics content for the game
         public override void Activate()
         {
-            if (_content == null)
-                _content = new ContentManager(ScreenManager.Game.Services, "Content");
+            if (_content == null) { _content = new ContentManager(ScreenManager.Game.Services, "Content"); }
 
             _gameFont = _content.Load<SpriteFont>("gamefont");
 
@@ -67,12 +66,17 @@ namespace GameArchitectureExample.Screens
             //If this screen is active
             if (IsActive)
             {
-                //TODO: Add your games update methods here
+                //TODO: Add your games update methods here 
 
             }
         }
 
-        // Unlike the Update method, this will only be called when the gameplay screen is active.
+        /// <summary>
+        /// This method is like the Update() except that it may only be called when this 
+        /// gameplay screen is active
+        /// </summary>
+        /// <param name="gameTime"></param>
+        /// <param name="input"></param>
         public override void HandleInput(GameTime gameTime, InputState input)
         {
             if (input == null) throw new ArgumentNullException(nameof(input));
