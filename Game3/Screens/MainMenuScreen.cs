@@ -8,7 +8,7 @@ namespace GameArchitectureExample.Screens
     {
         public MainMenuScreen() : base("Main Menu")
         {
-            var playGameMenuEntry = new MenuEntry("Play Game");
+            var playGameMenuEntry = new MenuEntry("New Game");
             var optionsMenuEntry = new MenuEntry("Options");
             var exitMenuEntry = new MenuEntry("Exit");
 

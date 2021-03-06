@@ -1,41 +1,54 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using GameArchitectureExample.Screens;
+using GameArchitectureExample.StateManagement;
 
 namespace Game3
 {
     public class Game3 : Game
     {
         private GraphicsDeviceManager _graphics;
-        private SpriteBatch _spriteBatch;
+        private readonly ScreenManager _screenManager;               
 
         public Game3()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+
+            var screenFactory = new ScreenFactory();
+            Services.AddService(typeof(IScreenFactory), screenFactory);
+
+            _screenManager = new ScreenManager(this);
+            Components.Add(_screenManager);
+
+            AddInitialScreens();
         }
 
-        protected override void Initialize()
+        private void AddInitialScreens()
         {
-            // TODO: Add your initialization logic here
+            //I want to see the Splash screen first, therfore, it is last added to the stack
+            _screenManager.AddScreen(new BackgroundScreen(), null);
+            _screenManager.AddScreen(new MainMenuScreen(), null);
+            if (!Constants.inDevelopment)
+            {
+                _screenManager.AddScreen(new SplashScreen(), null);
+            }            
+        }
 
+
+        protected override void Initialize()
+        {            
             base.Initialize();
         }
 
-        protected override void LoadContent()
-        {
-            _spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            // TODO: use this.Content to load your game content here
-        }
+        protected override void LoadContent() { }
 
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-
-            // TODO: Add your update logic here
 
             base.Update(gameTime);
         }
@@ -43,10 +56,7 @@ namespace Game3
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-
-            // TODO: Add your drawing code here
-
-            base.Draw(gameTime);
+            base.Draw(gameTime);    // The real drawing happens inside the ScreenManager component
         }
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using GameArchitectureExample.StateManagement;
+using Game3;
 
 namespace GameArchitectureExample.Screens
 {
@@ -16,8 +17,16 @@ namespace GameArchitectureExample.Screens
 
         public BackgroundScreen()
         {
-            TransitionOnTime = TimeSpan.FromSeconds(0.5);
-            TransitionOffTime = TimeSpan.FromSeconds(0.5);
+            if (Constants.inDevelopment)
+            {
+                TransitionOnTime = TimeSpan.FromSeconds(0);
+                TransitionOffTime = TimeSpan.FromSeconds(0);
+            }
+            else
+            {
+                TransitionOnTime = TimeSpan.FromSeconds(2);
+                TransitionOffTime = TimeSpan.FromSeconds(2);
+            }            
         }
 
         /// <summary>
