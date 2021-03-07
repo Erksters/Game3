@@ -84,7 +84,7 @@ namespace Game3
         /// Determines how quickly the draw() goes through frames
         /// Smaller is faster
         /// </summary>
-        private double animationSpeed = 0.1;
+        private double animationSpeed = 0.09;
 
         /// <summary>
         /// height of the animations sprite
@@ -260,14 +260,15 @@ namespace Game3
             {
                 if (!prioritizeAttack) { ProtagonistStatus = AnimateStatus.Walking; }
                 Flipped = true;
-                ProtagonistBody.LinearVelocity += new Vector2(-HorizontalVelocity, MyWorld.Gravity.Y);
+                ProtagonistBody.LinearVelocity += new Vector2(-HorizontalVelocity, MyWorld.Gravity.Y) * time;
+
                 MyWorld.Step(time);
             }
             else if (GoRight.Occurred(input, null, out player))
             {
                 Flipped = false;
                 if (!prioritizeAttack) { ProtagonistStatus = AnimateStatus.Walking; }
-                ProtagonistBody.LinearVelocity += new Vector2(HorizontalVelocity, MyWorld.Gravity.Y) ;
+                ProtagonistBody.LinearVelocity += new Vector2(HorizontalVelocity, MyWorld.Gravity.Y) * time ;
                 MyWorld.Step(time);
             }
             else
@@ -280,11 +281,11 @@ namespace Game3
 
         private void StopRunning()
         {
-            if (ProtagonistStatus == AnimateStatus.Idle && ProtagonistBody.LinearVelocity.X > 0)
+            if ((ProtagonistStatus != AnimateStatus.Walking || ProtagonistStatus != AnimateStatus.Attacking) && ProtagonistBody.LinearVelocity.X > 0)
             {
                 ProtagonistBody.LinearVelocity += new Vector2(-10, 0);
             }
-            if (ProtagonistStatus == AnimateStatus.Idle && ProtagonistBody.LinearVelocity.X < -0)
+            if ((ProtagonistStatus != AnimateStatus.Walking || ProtagonistStatus != AnimateStatus.Attacking) && ProtagonistBody.LinearVelocity.X < -0)
             {
                 ProtagonistBody.LinearVelocity += new Vector2(10, 0);
             }
