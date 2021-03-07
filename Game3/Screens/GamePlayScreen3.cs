@@ -1,23 +1,21 @@
 ﻿using System;
-using System.Threading;
+using System.Collections.Generic;
+using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using GameArchitectureExample.StateManagement;
 using Game3;
+using GameArchitectureExample.StateManagement;
 using tainicom.Aether.Physics2D.Collision.Shapes;
 using tainicom.Aether.Physics2D.Common;
 using tainicom.Aether.Physics2D.Dynamics;
 using tainicom.Aether.Physics2D.Dynamics.Joints;
-//using tainicom.Aether.Physics2D.Samples.ScreenSystem;
+using GameArchitectureExample.Screens;
 
-namespace GameArchitectureExample.Screens
+namespace Game3.Screens
 {
-    // This screen implements the actual game logic. It is just a
-    // placeholder to get the idea across: you'll probably want to
-    // put some more interesting gameplay in here!
-    public class GamePlayScreen1 : GameScreen 
+    public class GamePlayScreen3 : GameScreen
     {
         private ContentManager _content;
         private SpriteFont _gameFont;
@@ -28,12 +26,13 @@ namespace GameArchitectureExample.Screens
         #endregion
 
         #region Game Contents
-        private Vector2 _playerPosition = new Vector2(100, 100);
+        private Protagonist2 protagonist;
         #endregion
 
-        private readonly Random _random = new Random();
-
-        public GamePlayScreen1()
+        /// <summary>
+        /// My public constructor
+        /// </summary>
+        public GamePlayScreen3()
         {
             if (!Constants.inDevelopment)
             {
@@ -49,25 +48,20 @@ namespace GameArchitectureExample.Screens
             _pauseAction = new InputAction(
                 new[] { Buttons.Start, Buttons.Back },
                 new[] { Keys.Back, Keys.Escape, Keys.P }, true);
+
+
+            protagonist = new Protagonist2(new Vector2(200, 200));
         }
 
-        // Load graphics content for the game
+        /// <summary>
+        /// Load in graphics for this Game Plays Screen
+        /// </summary>
         public override void Activate()
         {
             if (_content == null) { _content = new ContentManager(ScreenManager.Game.Services, "Content"); }
 
             _gameFont = _content.Load<SpriteFont>("gamefont");
-
-            // A real game would probably have more content than this sample, so
-            // it would take longer to load. We simulate that by delaying for a
-            // while, giving you a chance to admire the beautiful loading screen.
-            if (!Constants.inDevelopment) { Thread.Sleep(5000); }
-            
-
-            // once the load has finished, we use ResetElapsedTime to tell the game's
-            // timing mechanism that we have just finished a very long frame, and that
-            // it should not try to catch up.
-            ScreenManager.Game.ResetElapsedTime();
+            protagonist.LoadContent(_content);
         }
 
 
@@ -79,75 +73,31 @@ namespace GameArchitectureExample.Screens
 
             // Gradually fade in or out depending on whether we are covered by the pause screen.
             HandlePauseTransition(coveredByOtherScreen);
-            
+
             //If this screen is active
             if (IsActive)
             {
                 //TODO: Add your games update methods here 
-
+                
             }
         }
 
-        /// <summary>
-        /// This method is like the Update() except that it may only be called when this 
-        /// gameplay screen is active
-        /// </summary>
-        /// <param name="gameTime"></param>
-        /// <param name="input"></param>
         public override void HandleInput(GameTime gameTime, InputState input)
         {
-            if (input == null) throw new ArgumentNullException(nameof(input));
 
-            // Look up inputs for the active player profile.
-            int playerIndex = (int)ControllingPlayer.Value;
-
-            var keyboardState = input.CurrentKeyboardStates[playerIndex];
-            var gamePadState = input.CurrentGamePadStates[playerIndex];
-
-            // The game pauses either if the user presses the pause button, or if
-            // they unplug the active gamepad. This requires us to keep track of
-            // whether a gamepad was ever plugged in, because we don't want to pause
-            // on PC if they are playing with a keyboard and have no gamepad at all!
-
-            //If the game pad get's disconnected, set this to true;
-            bool gamePadDisconnected = !gamePadState.IsConnected && input.GamePadWasConnected[playerIndex];
-
-            //An identifiable controller
             PlayerIndex player;
 
             //Do we need to pause?
-            if (_pauseAction.Occurred(input, ControllingPlayer, out player) || gamePadDisconnected)
+            if (_pauseAction.Occurred(input, ControllingPlayer, out player))
             {
                 ScreenManager.AddScreen(new PauseMenuScreen(), ControllingPlayer);
             }
-            else
-            {
-                // Otherwise move the protagonist position.
-                var movement = Vector2.Zero;
 
-                if (keyboardState.IsKeyDown(Keys.Left))
-                    movement.X--;
+            protagonist.Update(gameTime, input);
 
-                if (keyboardState.IsKeyDown(Keys.Right))
-                    movement.X++;
 
-                if (keyboardState.IsKeyDown(Keys.Up))
-                    movement.Y--;
-
-                if (keyboardState.IsKeyDown(Keys.Down))
-                    movement.Y++;
-
-                var thumbstick = gamePadState.ThumbSticks.Left;
-
-                movement.X += thumbstick.X;
-                movement.Y -= thumbstick.Y;
-
-                if (movement.Length() > 1)
-                    movement.Normalize();
-
-                _playerPosition += movement * 8f;
-            }
         }
+
 
         public override void Draw(GameTime gameTime)
         {
@@ -159,7 +109,7 @@ namespace GameArchitectureExample.Screens
             var spriteBatch = ScreenManager.SpriteBatch;
 
             spriteBatch.Begin();
-            spriteBatch.DrawString(_gameFont, "My Player", _playerPosition, Color.Green);
+            protagonist.Draw(gameTime, spriteBatch);
             spriteBatch.End();
 
             // If the game is transitioning on or off, fade it out to black.
@@ -192,7 +142,6 @@ namespace GameArchitectureExample.Screens
             else
                 _pauseAlpha = Math.Max(_pauseAlpha - 1f / 32, 0);
         }
-
 
         /// <summary>
         /// Windows phone requirement
