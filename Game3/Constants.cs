@@ -4,7 +4,6 @@ using System.Text;
 
 namespace Game3
 {
-
     public static class Constants
     {
         /// <summary>

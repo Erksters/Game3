@@ -19,11 +19,11 @@ namespace Game3
 
             var screenFactory = new ScreenFactory();
             Services.AddService(typeof(IScreenFactory), screenFactory);
-
             _screenManager = new ScreenManager(this);
             Components.Add(_screenManager);
 
             AddInitialScreens();
+            
         }
 
         private void AddInitialScreens()
