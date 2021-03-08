@@ -27,17 +27,14 @@ namespace Game3.Screens
         /// </summary>
         private static int _currentLanguage;
 
-        /// <summary>
-        /// Pointer to the current audio level
-        /// </summary>
-        private int MasterVolume = 50;
+        
 
         public MyOptionsScreen() : base($"Options")
         {
             _languageMenuEntry = new MenuEntry(string.Empty);
             masterVolumeIncreaseEntry = new MenuEntry("Increase Volume");
             masterVolumeDecreaseEntry = new MenuEntry("Decrease Volume");
-            Volume = new MenuEntry($"Volume : {MasterVolume.ToString()}");
+            Volume = new MenuEntry($"Volume : {AudioConstants.MenuMusicLooped.Volume.ToString()}");
 
             SetMenuEntryText();
             SetVolumeMenuEntryText();
@@ -64,7 +61,7 @@ namespace Game3.Screens
         /// <param name="e"></param>
         private void DecreaseAudioMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
-            MasterVolume--;
+            AudioConstants.DecreaseMasterVolume();
             //AudioConstants.SetNewMenuMusicVolume(MasterVolume);
             SetVolumeMenuEntryText();
         }
@@ -76,7 +73,7 @@ namespace Game3.Screens
         /// <param name="e"></param>
         private void IncreaseAudioMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
-            MasterVolume++;
+            AudioConstants.IncreaseMasterVolume();
             SetVolumeMenuEntryText();
         }
 
@@ -85,7 +82,7 @@ namespace Game3.Screens
         /// </summary>
         private void SetVolumeMenuEntryText()
         {
-            Volume.Text = $"Volume : {MasterVolume}";
+            Volume.Text = $"Volume : {AudioConstants.MenuMusicLooped.Volume.ToString()}";
         }
 
         /// <summary>
