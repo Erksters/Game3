@@ -16,18 +16,21 @@ namespace Game3.Screens
             var Level2Entry = new MenuEntry("2");
             var Level3Entry = new MenuEntry("3");
             var Level4Entry = new MenuEntry("4");
+            var Level5Entry = new MenuEntry("5");
             var exitMenuEntry = new MenuEntry("Back");
 
             Level1Entry.Selected += Level1EntrySelected;
             Level2Entry.Selected += Level2EntrySelected;
             Level3Entry.Selected += Level3EntrySelected;
             Level4Entry.Selected += Level4EntrySelected;
+            Level5Entry.Selected += Level5EntrySelected;
             exitMenuEntry.Selected += OnCancel;
 
             MenuEntries.Add(Level1Entry);
             MenuEntries.Add(Level2Entry);
             MenuEntries.Add(Level3Entry);
             MenuEntries.Add(Level4Entry);
+            MenuEntries.Add(Level5Entry);
             MenuEntries.Add(exitMenuEntry);
 
         }
@@ -70,6 +73,16 @@ namespace Game3.Screens
         private void Level4EntrySelected(object Sender, PlayerIndexEventArgs e)
         {
             LoadingScreen.Load(ScreenManager, true, e.PlayerIndex, new GamePlayScreen4());
+        }
+
+        /// <summary>
+        /// Send the user to a GamePlayScreen #
+        /// </summary>
+        /// <param name="Sender"></param>
+        /// <param name="e"></param>
+        private void Level5EntrySelected(object Sender, PlayerIndexEventArgs e)
+        {
+            LoadingScreen.Load(ScreenManager, true, e.PlayerIndex, new GamePlayScreen5());
         }
     }
 }
