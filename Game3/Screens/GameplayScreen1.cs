@@ -11,7 +11,6 @@ using tainicom.Aether.Physics2D.Common;
 using tainicom.Aether.Physics2D.Dynamics;
 using tainicom.Aether.Physics2D.Dynamics.Joints;
 using Game3.Screens;
-//using tainicom.Aether.Physics2D.Samples.ScreenSystem;
 
 namespace GameArchitectureExample.Screens
 {
