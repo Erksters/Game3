@@ -20,16 +20,18 @@ namespace Game3.Screens
         private ContentManager _content;
         private SpriteFont _gameFont;
 
-        #region Transition animations
+        #region Screen Transition animations
         private float _pauseAlpha;
-        private readonly InputAction _pauseAction;
+        private readonly InputAction _pauseAction = new InputAction(
+                new[] { Buttons.Start, Buttons.Back},
+                new[] { Keys.Back, Keys.Escape, Keys.P}, true);
         #endregion
 
         #region Game Contents
         private Protagonist4 protagonist;
         private World world;
         private Vector2 initialPosition = new Vector2(300,300);
-        private Vector2 gravityForce = new Vector2(0, 100);
+        private Vector2 gravityForce = new Vector2(0, 150);
         #endregion
 
         /// <summary>
@@ -48,18 +50,24 @@ namespace Game3.Screens
                 TransitionOffTime = TimeSpan.FromSeconds(0);
             }
 
-            _pauseAction = new InputAction(
-                new[] { Buttons.Start, Buttons.Back },
-                new[] { Keys.Back, Keys.Escape, Keys.P }, true);
-
             world = new World();
             world.Gravity = gravityForce;
-            //world.Gravity = new Vector2(0, 0);
             GenerateBoundaries();
-            var RigidBody = world.CreateRectangle(Protagonist4.idleWidth, Protagonist4.idleHeight,
+            protagonist = new Protagonist4(CreateProtagonistBody());
+        }
+
+        /// <summary>
+        /// Helper method to clean up my public constructor
+        /// Creates the body for the protagonist.
+        /// </summary>
+        /// <returns></returns>
+        private Body CreateProtagonistBody()
+        {
+            Body rigidBody = world.CreateRectangle(Protagonist4.idleWidth, Protagonist4.idleHeight,
                 10, initialPosition, 0, BodyType.Dynamic);
-            RigidBody.SetRestitution(0);
-            protagonist = new Protagonist4(RigidBody, world);
+            rigidBody.SetRestitution(0);
+
+            return (rigidBody);
         }
 
         /// <summary>
@@ -73,6 +81,11 @@ namespace Game3.Screens
             protagonist.LoadContent(_content);
         }
 
+        /// <summary>
+        /// Helper method to create boundaries for our world.
+        /// Currently invisible. I need them to collide with my protagonist so that he knows
+        /// he may jump again.
+        /// </summary>
         private void GenerateBoundaries()
         {
             var top = 0;
@@ -106,11 +119,21 @@ namespace Game3.Screens
             if (IsActive)
             {
                 //TODO: Add your games update methods here 
+
+                //I wanted to speed up this game motion.
+                world.Step((float)gameTime.ElapsedGameTime.TotalSeconds);
+                world.Step((float)gameTime.ElapsedGameTime.TotalSeconds);
                 world.Step((float)gameTime.ElapsedGameTime.TotalSeconds);
 
             }
         }
 
+        /// <summary>
+        /// Method to handle some screen focused inputs such as pause.
+        /// I'm sure triple A games will have the "camera mode" handled here too
+        /// </summary>
+        /// <param name="gameTime"></param>
+        /// <param name="input"></param>
         public override void HandleInput(GameTime gameTime, InputState input)
         {
 
@@ -127,19 +150,19 @@ namespace Game3.Screens
 
         }
 
-
+        /// <summary>
+        /// Method for Game drawing
+        /// </summary>
+        /// <param name="gameTime"></param>
         public override void Draw(GameTime gameTime)
         {
             // This game has a blue background. Why? Because!
             ScreenManager.GraphicsDevice.Clear(ClearOptions.Target, Color.CornflowerBlue, 0, 0);
-
-
-            // Our player and enemy are both actually just text strings.
-            var spriteBatch = ScreenManager.SpriteBatch;
-
-            spriteBatch.Begin();
-            protagonist.Draw(gameTime, spriteBatch);
-            spriteBatch.End();
+ 
+            ScreenManager.SpriteBatch.Begin();
+            protagonist.Draw(gameTime, ScreenManager.SpriteBatch);
+            ScreenManager.SpriteBatch.DrawString(_gameFont, $"JumpTimer {protagonist.jumpingTimer}", new Vector2(50, 50), Color.White);
+            ScreenManager.SpriteBatch.End();
 
             // If the game is transitioning on or off, fade it out to black.
             HandleScreenTransition();

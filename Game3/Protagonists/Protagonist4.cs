@@ -84,7 +84,21 @@ namespace Game3
         /// Determines how quickly the draw() goes through frames
         /// Smaller is faster
         /// </summary>
-        private double animationSpeed = 0.09;
+        private float idleAnimationSpeed = (float)0.09;
+
+        /// <summary>
+        /// Helps animate the sprite
+        /// Determines how quickly the draw() goes through frames
+        /// Smaller is faster
+        /// </summary>
+        private float attackAnimationSpeed = (float)0.05;
+
+        /// <summary>
+        /// Helps animate the sprite
+        /// Determines how quickly the draw() goes through frames
+        /// Smaller is faster
+        /// </summary>
+        private float walkAnimationSpeed = (float)0.05;
 
         /// <summary>
         /// height of the animations sprite
@@ -137,6 +151,10 @@ namespace Game3
         #endregion
 
         #region Inactive Environmental Bounds
+
+        /// <summary>
+        /// A body to apply to the forces but so far just jumps forces
+        /// </summary>
         public Body ProtagonistBody;
         #endregion
 
@@ -144,17 +162,7 @@ namespace Game3
         /// <summary>
         /// Used for constant application of speed onto Position property
         /// </summary>
-        public int HorizontalVelocity = 1000;
-
-        /// <summary>
-        /// The value of Jumping in this environment
-        /// </summary>
-        public Vector2 VerticalVelocity = new Vector2(0, -3);
-
-        /// <summary>
-        /// Determines where to draw the sprite
-        /// </summary>
-        private Vector2 Position;
+        private int HorizontalVelocity = 4;
 
         /// <summary>
         /// Helper attribute for ResetGame()
@@ -164,13 +172,24 @@ namespace Game3
         /// <summary>
         /// Velocity helper and used for speed item upgrades
         /// </summary>
-        private int SpeedMultiplier = 2000000 ;
-        #endregion
+        private int SpeedMultiplier = 1;
+
+        /// <summary>
+        /// Determines what the Terminal Velocity is for this character will be.
+        /// 
+        /// </summary>
+        private int terminalVelocity = 150;
+
+        /// <summary>
+        /// The value of Jumping in this environment
+        /// </summary>
+        public Vector2 JumpVelocity = new Vector2(0, -125);
 
         /// <summary>
         /// Will prevent the user from jumping infinitely
         /// </summary>
-        private double jumpingTimer = 0;
+        public double jumpingTimer = 0;
+        #endregion
 
         #region Inputs
         InputAction GoLeft = new InputAction(
@@ -195,17 +214,13 @@ namespace Game3
 
         #endregion
 
-        public World MyWorld;
-
         /// <summary>
         /// public constructor
         /// </summary>
-        public Protagonist4(Body body, World world)
+        public Protagonist4(Body body)
         {
             ProtagonistBody = body;
-            MyWorld = world;
         }
-
 
         /// <summary>
         /// Handles the movement of the protagonist
@@ -226,68 +241,58 @@ namespace Game3
             {
                 HandleMovementsWithAttacks(gameTime, input, player, false);
             }
-            //CapLinearVelocity();
+            CapFallingVelocity();
         }
-
-        int HspeedLimit = 10000;
-        int VspeedLimit = 150;
 
         /// <summary>
         /// Add a helpful cap on speed
         /// </summary>
-        //private void CapLinearVelocity()
-        //{
-        //    if(ProtagonistBody.LinearVelocity.X > HspeedLimit)
-        //    {
-        //        ProtagonistBody.LinearVelocity = new Vector2(HspeedLimit, ProtagonistBody.LinearVelocity.Y);
-        //    }
-        //    if (ProtagonistBody.LinearVelocity.X < -HspeedLimit)
-        //    {
-        //        ProtagonistBody.LinearVelocity = new Vector2(-HspeedLimit, ProtagonistBody.LinearVelocity.Y);
-        //    }
-        //    Slow down falls
-        //    if (ProtagonistBody.LinearVelocity.Y < -VspeedLimit)
-        //    {
-        //        ProtagonistBody.LinearVelocity = new Vector2(ProtagonistBody.LinearVelocity.X, VspeedLimit);
-        //    }
-        //}
+        private void CapFallingVelocity()
+        {
+            if (ProtagonistBody.LinearVelocity.Y < -terminalVelocity)
+            {
+                ProtagonistBody.LinearVelocity = new Vector2(ProtagonistBody.LinearVelocity.X, terminalVelocity);
+            }
+        }
 
-        public int gravity = 100;
-        private void HandleMovementsWithAttacks(GameTime gameTime , InputState input, PlayerIndex player, bool prioritizeAttack)
+        /// <summary>
+        /// Helper method to move the protagonist.
+        /// Includes Jump, and left and right movements
+        /// </summary>
+        /// <param name="gameTime"></param>
+        /// <param name="input"></param>
+        /// <param name="player"></param>
+        /// <param name="prioritizeAttack">True to animate Attack. False to animate walk or idle</param>
+        private void HandleMovementsWithAttacks(GameTime gameTime, InputState input, PlayerIndex player, bool prioritizeAttack)
         {
             float time = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            //If just jumping
+            if (GoUp.Occurred(input, null, out player) && jumpingTimer < 0.4)
+            {
+                ProtagonistBody.LinearVelocity = JumpVelocity;
+                jumpingTimer += time;
+            }
+            else
+            {
+                if (!GoUp.Occurred(input, null, out player))
+                {
+                    jumpingTimer = 0;
+                }                    
+            }
+
             if (GoLeft.Occurred(input, null, out player))
             {
                 if (!prioritizeAttack) { ProtagonistStatus = AnimateStatus.Walking; }
                 Flipped = true;
-                ProtagonistBody.LinearVelocity += new Vector2(-HorizontalVelocity, MyWorld.Gravity.Y) * time;
-
-                MyWorld.Step(time);
+                ProtagonistBody.Position += new Vector2(-HorizontalVelocity, 0);
             }
-            else if (GoRight.Occurred(input, null, out player))
+
+            if (GoRight.Occurred(input, null, out player))
             {
                 Flipped = false;
                 if (!prioritizeAttack) { ProtagonistStatus = AnimateStatus.Walking; }
-                ProtagonistBody.LinearVelocity += new Vector2(HorizontalVelocity, MyWorld.Gravity.Y) * time ;
-                MyWorld.Step(time);
-            }
-            else
-            {
-                StopRunning();
-                MyWorld.Step(time);
-
-            }
-        }
-
-        private void StopRunning()
-        {
-            if ((ProtagonistStatus != AnimateStatus.Walking || ProtagonistStatus != AnimateStatus.Attacking) && ProtagonistBody.LinearVelocity.X > 0)
-            {
-                ProtagonistBody.LinearVelocity += new Vector2(-10, 0);
-            }
-            if ((ProtagonistStatus != AnimateStatus.Walking || ProtagonistStatus != AnimateStatus.Attacking) && ProtagonistBody.LinearVelocity.X < -0)
-            {
-                ProtagonistBody.LinearVelocity += new Vector2(10, 0);
+                ProtagonistBody.Position += new Vector2(HorizontalVelocity, 0);
             }
         }
 
@@ -345,6 +350,7 @@ namespace Game3
             }
         }
 
+        
         /// <summary>
         /// Helper method to help condense Draw()
         /// Will draw the Attack animation for the protagonist
@@ -357,9 +363,9 @@ namespace Game3
             idleFrame = 0;
 
             //Update the frame
-            if (animationTimer > animationSpeed)
+            if (animationTimer > attackAnimationSpeed)
             {
-                animationTimer -= animationSpeed;
+                animationTimer -= attackAnimationSpeed;
                 attackingFrame++;
             }
 
@@ -375,7 +381,7 @@ namespace Game3
                 new Rectangle((int)ProtagonistBody.Position.X, (int)ProtagonistBody.Position.Y, AttackingWidth, AttackingHeight),
                 source,
                 Color.White,
-                0f,
+                ProtagonistBody.Rotation,
                 new Vector2(0, 0),
                 spriteEffect, 0);
         }
@@ -392,9 +398,9 @@ namespace Game3
             attackingFrame = 0;
 
             //Update the frame
-            if (animationTimer > animationSpeed)
+            if (animationTimer > idleAnimationSpeed)
             {
-                animationTimer -= animationSpeed;
+                animationTimer -= idleAnimationSpeed;
                 idleFrame++;
             }
 
@@ -427,9 +433,9 @@ namespace Game3
             idleFrame = 0;
 
             //Update the frame
-            if (animationTimer > animationSpeed)
+            if (animationTimer > walkAnimationSpeed)
             {
-                animationTimer -= animationSpeed;
+                animationTimer -= walkAnimationSpeed;
                 walkingFrame++;
             }
 
