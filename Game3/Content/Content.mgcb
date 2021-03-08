@@ -56,6 +56,12 @@
 /processorParam:TextureFormat=Color
 /build:gradient.png
 
+#begin Grand-Adventure.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Grand-Adventure.wav
+
 #begin liftoff_of_smap.mp4
 /importer:H264Importer
 /processor:VideoProcessor

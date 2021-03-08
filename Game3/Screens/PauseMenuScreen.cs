@@ -1,6 +1,8 @@
 ﻿using GameArchitectureExample.StateManagement;
+using Game3;
+using GameArchitectureExample.Screens;
 
-namespace GameArchitectureExample.Screens
+namespace Game3.Screens
 {
     // The pause menu comes up over the top of the game,
     // giving the player options to resume or quit.
@@ -9,13 +11,21 @@ namespace GameArchitectureExample.Screens
         public PauseMenuScreen() : base("Paused")
         {
             var resumeGameMenuEntry = new MenuEntry("Resume Game");
+            var optionsMenuEntry= new MenuEntry("Options");
             var quitGameMenuEntry = new MenuEntry("Quit Game");
 
             resumeGameMenuEntry.Selected += OnCancel;
+            optionsMenuEntry.Selected += OptionsMenuEntrySelected;
             quitGameMenuEntry.Selected += QuitGameMenuEntrySelected;
 
             MenuEntries.Add(resumeGameMenuEntry);
+            MenuEntries.Add(optionsMenuEntry);
             MenuEntries.Add(quitGameMenuEntry);
+        }
+
+        private void OptionsMenuEntrySelected(object sender, PlayerIndexEventArgs e)
+        {
+            ScreenManager.AddScreen(new MyOptionsScreen(), null);
         }
 
         private void QuitGameMenuEntrySelected(object sender, PlayerIndexEventArgs e)
