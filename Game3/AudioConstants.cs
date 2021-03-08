@@ -53,13 +53,20 @@ namespace Game3
 
         public static void DecreaseMasterVolume()
         {
-
-            MenuMusicLooped.Volume += (float)-0.01;
+            if (MenuMusicLooped.Volume >= (float)0.10) { MenuMusicLooped.Volume += (float)-0.10; }
+            else
+            {
+                MenuMusicLooped.Volume = 0;
+            }
         }
 
         public static void IncreaseMasterVolume()
         {
-            MenuMusicLooped.Volume += (float)+0.01;
+            if (MenuMusicLooped.Volume <= (float)0.90) { MenuMusicLooped.Volume += (float)0.10; }
+            else
+            {
+                MenuMusicLooped.Volume = 1;
+            }
         }
     }
 }
