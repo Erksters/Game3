@@ -11,14 +11,17 @@ namespace Game3.Screens
         public PauseMenuScreen() : base("Paused")
         {
             var resumeGameMenuEntry = new MenuEntry("Resume Game");
+            var restartMenuEntry = new MenuEntry("Restart");
             var optionsMenuEntry= new MenuEntry("Options");
             var quitGameMenuEntry = new MenuEntry("Quit Game");
 
             resumeGameMenuEntry.Selected += OnCancel;
             optionsMenuEntry.Selected += OptionsMenuEntrySelected;
+            restartMenuEntry.Selected += RestartMenuEntrySelected;
             quitGameMenuEntry.Selected += QuitGameMenuEntrySelected;
 
             MenuEntries.Add(resumeGameMenuEntry);
+            MenuEntries.Add(restartMenuEntry);
             MenuEntries.Add(optionsMenuEntry);
             MenuEntries.Add(quitGameMenuEntry);
         }
@@ -26,6 +29,12 @@ namespace Game3.Screens
         private void OptionsMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
             ScreenManager.AddScreen(new MyOptionsScreen(), null);
+        }
+
+        private void RestartMenuEntrySelected(object sender, PlayerIndexEventArgs e)
+        {
+            ScreenManager.RemoveScreen(this);
+            Constants.currentGameScreen.Reset();           
         }
 
         private void QuitGameMenuEntrySelected(object sender, PlayerIndexEventArgs e)

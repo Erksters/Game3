@@ -25,6 +25,10 @@ namespace Game3.Screens
         private readonly InputAction _pauseAction = new InputAction(
                 new[] { Buttons.Start, Buttons.Back},
                 new[] { Keys.Back, Keys.Escape, Keys.P}, true);
+
+        private readonly InputAction reset = new InputAction(
+                new[] { Buttons.Start, Buttons.Back },
+                new[] { Keys.R }, true);
         #endregion
 
         #region Game Contents
@@ -54,6 +58,13 @@ namespace Game3.Screens
             world.Gravity = gravityForce;
             GenerateBoundaries();
             protagonist = new Protagonist4(CreateProtagonistBody());
+            Constants.ChangeGameScreen(this);
+        }
+
+        public void Reset()
+        {
+            protagonist.Reset(CreateProtagonistBody());
+            
         }
 
         /// <summary>
@@ -145,6 +156,11 @@ namespace Game3.Screens
                 ScreenManager.AddScreen(new PauseMenuScreen(), ControllingPlayer);
             }
 
+            if(reset.Occurred(input, ControllingPlayer, out player))
+            {
+                Reset();
+                //protagonist.Reset(CreateProtagonistBody());
+            }
             protagonist.Update(gameTime, input);
 
 

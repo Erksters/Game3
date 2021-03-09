@@ -214,6 +214,7 @@ namespace Game3
 
         #endregion
 
+        
         /// <summary>
         /// public constructor
         /// </summary>
@@ -350,7 +351,12 @@ namespace Game3
             }
         }
 
-        
+        public void Reset(Body newBody)
+        {
+            ProtagonistBody = newBody;
+            ProtagonistBody.Position = initialPosition;
+        }
+
         /// <summary>
         /// Helper method to help condense Draw()
         /// Will draw the Attack animation for the protagonist
