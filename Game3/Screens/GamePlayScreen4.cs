@@ -34,9 +34,11 @@ namespace Game3.Screens
         #region Game Contents
         private Protagonist4 protagonist;
         private World world;
-        private Vector2 initialPosition = new Vector2(300,300);
+        private Vector2 initialPosition = new Vector2(0,0);
         private Vector2 gravityForce = new Vector2(0, 150);
         #endregion
+
+        public bool win;
 
         /// <summary>
         /// My public constructor
@@ -64,7 +66,7 @@ namespace Game3.Screens
         public void Reset()
         {
             protagonist.Reset(CreateProtagonistBody());
-            
+            win = false;
         }
 
         /// <summary>
@@ -126,6 +128,15 @@ namespace Game3.Screens
             // Gradually fade in or out depending on whether we are covered by the pause screen.
             HandlePauseTransition(coveredByOtherScreen);
 
+
+            ///If we've won the game return;
+            if (win)
+            {
+                return;
+            }
+
+            CheckWinCondition();
+
             //If this screen is active
             if (IsActive)
             {
@@ -136,6 +147,16 @@ namespace Game3.Screens
                 world.Step((float)gameTime.ElapsedGameTime.TotalSeconds);
                 world.Step((float)gameTime.ElapsedGameTime.TotalSeconds);
 
+                
+
+            }
+        }
+
+        private void CheckWinCondition()
+        {
+            if(protagonist.ProtagonistBody.Position.X > Constants.GAME_WIDTH)
+            {
+                win = true;
             }
         }
 
@@ -178,6 +199,7 @@ namespace Game3.Screens
             ScreenManager.SpriteBatch.Begin();
             protagonist.Draw(gameTime, ScreenManager.SpriteBatch);
             ScreenManager.SpriteBatch.DrawString(_gameFont, $"JumpTimer {protagonist.jumpingTimer}", new Vector2(50, 50), Color.White);
+            if (win) { ScreenManager.SpriteBatch.DrawString(_gameFont, $"You win", new Vector2(100, 100), Color.White); }
             ScreenManager.SpriteBatch.End();
 
             // If the game is transitioning on or off, fade it out to black.
