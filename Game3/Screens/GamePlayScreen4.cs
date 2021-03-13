@@ -36,10 +36,17 @@ namespace Game3.Screens
         private World world;
         private Vector2 initialPosition = new Vector2(300,300);
         private Vector2 gravityForce = new Vector2(0, 150);
-        #endregion
 
+        /// <summary>
+        /// flag attribute to determine if we have won the game.
+        /// </summary>
         public bool win;
+
+        /// <summary>
+        /// Once the timer reaches 0, the player will lose the game. 
+        /// </summary>
         public double timer = 10;
+        #endregion
 
         /// <summary>
         /// My public constructor
@@ -64,6 +71,9 @@ namespace Game3.Screens
             Constants.ChangeGameScreen(this);
         }
 
+        /// <summary>
+        /// Method to help reset this game. 
+        /// </summary>
         public void Reset()
         {
             world = new World();
@@ -142,6 +152,7 @@ namespace Game3.Screens
                 return;
             }
 
+            //If we ran out of time return;
             if (timer < 0.01)
             {
                 return; 
