@@ -9,7 +9,7 @@ namespace GameArchitectureExample.StateManagement
     /// with other layers to create complex menus or game
     /// experiences
     /// </summary>
-    public abstract class GameScreen
+    public abstract class GameScreen : Game3.GameScreenInterface1
     {
         /// <summary>
         /// Indicates if this screen is a popup
@@ -190,5 +190,7 @@ namespace GameArchitectureExample.StateManagement
             else
                 IsExiting = true;    // Otherwise flag that it should transition off and then exit.
         }
+
+        public virtual void Reset() { }
     }
 }

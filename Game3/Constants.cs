@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using GameArchitectureExample.Screens;
+using Game3.Screens;
 
 namespace Game3
 {
@@ -23,5 +25,24 @@ namespace Game3
         /// The height of hte game world
         /// </summary>
         public static int GAME_HEIGHT = 480;
+
+        /// <summary>
+        /// Get the current Game Screen
+        /// </summary>
+        public static  GamePlayScreen4 currentGameScreen;
+
+        public static void ResetGame()
+        {
+            currentGameScreen.Reset();
+        }
+        
+        /// <summary>
+        /// Set the current GameScreen
+        /// </summary>
+        /// <param name="gameScreen"></param>
+        public static void ChangeGameScreen(GamePlayScreen4 gameScreen)
+        {
+            currentGameScreen = gameScreen;
+        }
     }
 }

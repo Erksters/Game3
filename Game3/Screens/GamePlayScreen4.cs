@@ -25,6 +25,10 @@ namespace Game3.Screens
         private readonly InputAction _pauseAction = new InputAction(
                 new[] { Buttons.Start, Buttons.Back},
                 new[] { Keys.Back, Keys.Escape, Keys.P}, true);
+
+        private readonly InputAction reset = new InputAction(
+                new[] { Buttons.Start, Buttons.Back },
+                new[] { Keys.R }, true);
         #endregion
 
         #region Game Contents
@@ -33,6 +37,9 @@ namespace Game3.Screens
         private Vector2 initialPosition = new Vector2(300,300);
         private Vector2 gravityForce = new Vector2(0, 150);
         #endregion
+
+        public bool win;
+        public double timer = 10;
 
         /// <summary>
         /// My public constructor
@@ -54,6 +61,18 @@ namespace Game3.Screens
             world.Gravity = gravityForce;
             GenerateBoundaries();
             protagonist = new Protagonist4(CreateProtagonistBody());
+            Constants.ChangeGameScreen(this);
+        }
+
+        public void Reset()
+        {
+            world = new World();
+            world.Gravity = gravityForce;
+            GenerateBoundaries();
+            protagonist.Reset(CreateProtagonistBody());
+            protagonist.ProtagonistBody.Position = initialPosition;
+            win = false;
+            timer = 10;
         }
 
         /// <summary>
@@ -111,9 +130,24 @@ namespace Game3.Screens
         public override void Update(GameTime gameTime, bool otherScreenHasFocus, bool coveredByOtherScreen)
         {
             base.Update(gameTime, otherScreenHasFocus, false);
+            float time = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             // Gradually fade in or out depending on whether we are covered by the pause screen.
             HandlePauseTransition(coveredByOtherScreen);
+
+
+            ///If we've won the game return;
+            if (win)
+            {
+                return;
+            }
+
+            if (timer < 0.01)
+            {
+                return; 
+            }
+
+            CheckWinCondition();
 
             //If this screen is active
             if (IsActive)
@@ -121,10 +155,19 @@ namespace Game3.Screens
                 //TODO: Add your games update methods here 
 
                 //I wanted to speed up this game motion.
-                world.Step((float)gameTime.ElapsedGameTime.TotalSeconds);
-                world.Step((float)gameTime.ElapsedGameTime.TotalSeconds);
-                world.Step((float)gameTime.ElapsedGameTime.TotalSeconds);
+                world.Step(time);
+                world.Step(time);
+                world.Step(time);
 
+                timer -= time;
+            }
+        }
+
+        private void CheckWinCondition()
+        {
+            if(protagonist.ProtagonistBody.Position.X > Constants.GAME_WIDTH)
+            {
+                win = true;
             }
         }
 
@@ -145,10 +188,14 @@ namespace Game3.Screens
                 ScreenManager.AddScreen(new PauseMenuScreen(), ControllingPlayer);
             }
 
+            if(reset.Occurred(input, ControllingPlayer, out player))
+            {
+                Reset();
+            }
+            if (win) { return; }
+            if (timer < 0) { return; }
             protagonist.Update(gameTime, input);
-
-
-        }
+            }
 
         /// <summary>
         /// Method for Game drawing
@@ -161,7 +208,12 @@ namespace Game3.Screens
  
             ScreenManager.SpriteBatch.Begin();
             protagonist.Draw(gameTime, ScreenManager.SpriteBatch);
-            ScreenManager.SpriteBatch.DrawString(_gameFont, $"JumpTimer {protagonist.jumpingTimer}", new Vector2(50, 50), Color.White);
+            ScreenManager.SpriteBatch.DrawString(_gameFont, "Move     Right", new Vector2(50, 50), Color.White);
+            ScreenManager.SpriteBatch.DrawString(_gameFont, $"Time     Left {timer.ToString("0.00")}", new Vector2(50, 100), Color.White);
+            if (timer < 0) { ScreenManager.SpriteBatch.DrawString(_gameFont, "You     Lost", new Vector2(100, 150), Color.White); }
+            if (timer < 0) { ScreenManager.SpriteBatch.DrawString(_gameFont, "Press     R     to     restart", new Vector2(100, 200), Color.White); }
+            if (win) { ScreenManager.SpriteBatch.DrawString(_gameFont, $"You     win", new Vector2(100, 150), Color.White); }
+
             ScreenManager.SpriteBatch.End();
 
             // If the game is transitioning on or off, fade it out to black.
